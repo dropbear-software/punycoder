@@ -1,0 +1,23 @@
+name: punycoder
+description: Punycoder is a well tested Dart implementation of the RFC 3492 Punycode specification
+version: 0.1.0-dev
+repository: https://github.com/dropbear-software/punycoder/
+issue_tracker: https://github.com/dropbear-software/punycoder/issues
+topics:
+  - punycode
+  - rfc3492
+  - standards
+  - internationalisation
+  - unicode
+  - codec
+
+environment:
+  sdk: ^3.7.3
+
+dependencies:
+  # path: ^1.8.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  oath: ^0.4.0
+  test: ^1.24.0
