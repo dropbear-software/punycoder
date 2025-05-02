@@ -5,7 +5,6 @@ repository: https://github.com/dropbear-software/punycoder/
 issue_tracker: https://github.com/dropbear-software/punycoder/issues
 topics:
   - punycode
-  - rfc3492
   - standards
   - internationalisation
   - unicode
