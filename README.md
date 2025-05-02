@@ -37,7 +37,7 @@ Add the package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  punycoder: 0.1.0
+  punycoder: 0.2.0
 ```
 
 Then, import the library in your Dart code:

@@ -8,8 +8,8 @@
 /// and hyphens. This library allows encoding Unicode strings to Punycode
 /// ASCII strings and decoding them back to Unicode.
 ///
-/// This library exports the main [PunycodeCodec] which follows the 
-/// standard codec interface from `dart:convert` to help ensure a 
+/// This library exports the main [PunycodeCodec] which follows the
+/// standard codec interface from `dart:convert` to help ensure a
 /// smooth and idomatic Dart experience when encoding and decoding.
 ///
 /// ## Usage
