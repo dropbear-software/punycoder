@@ -23,11 +23,11 @@ with the prefix `xn--`.
 
 * **RFC 3492 Compliant:** Implements the Punycode encoding and decoding
     algorithms as specified in the standard.
-* **IDNA Helpers:** Provides convenient methods (`toAscii`, `toUnicode`) for
-    converting full domain names or email addresses, automatically handling
-    the `xn--` prefix and processing only the necessary parts of the string.
-* **Core Codec:** Offers direct access to the raw Punycode `encode` and `decode`
-    operations via `PunycodeCodec` for advanced use cases.
+* **IDNA Friendly:** Provides convenient ways of converting full domain names or 
+    email addresses, automatically handling the `xn--` prefix and processing 
+    only the necessary parts of the string.
+* **Idiomatic Dart:** This package implements the `Converter<S, T>` interface 
+    defined in `dart:convert` to make working with Punycode easy and familiar.
 * **Efficient and Tested:** Based on a port of the well-regarded Punycode.js
     library, including tests based on official RFC examples.
 
@@ -54,41 +54,27 @@ The easiest way to handle domain names or emails is using the singleton
 import 'package:punycoder/punycoder.dart';
 
 void main() {
-  // Use the singleton encoder/decoder for common IDNA tasks
-  const encoder = punycodeEncoder;
-  const decoder = punycodeDecoder;
+  // Designed to be used with domains and emails which have special rules
+  const domainCodec = PunycodeCodec();
+  // Designed to work with simple strings
+  const simpleCodec = PunycodeCodec.simple();
 
-  // --- Convert domains/emails TO ASCII (ACE format) ---
-  final domainsToEncode = ['bücher.example', 'example.com', '你好.test'];
-  print('Encoding to ASCII:');
-  for (final domain in domainsToEncode) {
-    final asciiVersion = encoder.toAscii(domain);
-    // toAscii adds 'xn--' prefix only if encoding actually happens
-    print('"$domain"  ->  "$asciiVersion"');
-    // Output:
-    // "bücher.example"  ->  "xn--bcher-kva.example"
-    // "example.com"  ->  "example.com"
-    // "你好.test"  ->  "xn--6qq79v.test"
-  }
+  final encodedString = simpleCodec.encode('münchen');
+  final encodedDomain = domainCodec.encode('münchen.com');
+  final encodedEmail = domainCodec.encode('münchen@münchen.com');
 
-  // --- Convert domains/emails FROM ASCII (ACE format) ---
-  final domainsToDecode = ['xn--bcher-kva.example', 'example.com', 'xn--6qq79v.test'];
-   print('Decoding from ASCII:');
-  for (final domain in domainsToDecode) {
-    final unicodeVersion = decoder.toUnicode(domain);
-    // toUnicode decodes labels starting with 'xn--'
-    print('"$domain"  ->  "$unicodeVersion"');
-    // Output:
-    // "xn--bcher-kva.example"  ->  "bücher.example"
-    // "example.com"  ->  "example.com"
-    // "xn--6qq79v.test"  ->  "你好.test"
-  }
+  stdout.writeln(encodedString); // Output: mnchen-3ya
+  // Uses the correct prefix for the domain
+  stdout.writeln(encodedDomain); // Output: xn--mnchen-3ya.com
+  // Only the domain should be encoded
+  stdout.writeln(encodedEmail); // Output: münchen@xn--mnchen-3ya.com
 
-  // --- Raw Encoding/Decoding (Advanced) ---
-  // For direct encoding/decoding without automatic prefix handling or domain splitting:
-  final codec = PunycodeCodec();
-  final rawEncoded = codec.encode('bücher'); // -> 'bcher-kva' (no prefix)
-  final rawDecoded = codec.decode('bcher-kva'); // -> 'bücher'
-  print('\nRaw codec example: "$rawDecoded"');
+  final decodedString = simpleCodec.decode('mnchen-3ya');
+  final decodecDomain = domainCodec.decode('xn--mnchen-3ya.com');
+  final decodedEmail = domainCodec.decode('münchen@xn--mnchen-3ya.com');
+
+  stdout.writeln(decodedString); // Output: münchen
+  stdout.writeln(decodecDomain); // Output: münchen.com
+  stdout.writeln(decodedEmail); // Output: münchen@münchen.com
 }
 ```
