@@ -1,5 +1,6 @@
 [![pub package](https://img.shields.io/pub/v/punycoder.svg)](https://pub.dev/packages/punycoder)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Open in Firebase Studio](https://cdn.firebasestudio.dev/btn/open_light_20.svg)](https://studio.firebase.google.com/import?url=https%3A%2F%2Fgithub.com%2Fdropbear-software%2Fpunycoder)
 # Punycoder
 A Dart implementation of the Punycode (RFC 3492) encoding algorithm used for
 Internationalized Domain Names in Applications (IDNA).
