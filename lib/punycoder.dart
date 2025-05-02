@@ -8,9 +8,9 @@
 /// and hyphens. This library allows encoding Unicode strings to Punycode
 /// ASCII strings and decoding them back to Unicode.
 ///
-/// This library exports the main [PunycodeCodec] which provides convenient
-/// access to both the [PunycodeEncoder] and [PunycodeDecoder]. You can
-/// use the codec directly or instantiate the encoder/decoder separately.
+/// This library exports the main [PunycodeCodec] which follows the 
+/// standard codec interface from `dart:convert` to help ensure a 
+/// smooth and idomatic Dart experience when encoding and decoding.
 ///
 /// ## Usage
 ///
@@ -18,33 +18,15 @@
 /// import 'package:punycoder/punycoder.dart';
 ///
 /// void main() {
-///   // 1. Use the codec directly
 ///   final codec = PunycodeCodec();
 ///
 ///   // Encode a Unicode string (e.g., a domain label)
 ///   final encoded = codec.encode('bücher');
 ///   print(encoded); // Output: bcher-kva
 ///
-///   // Decode a Punycode string (typically prefixed with 'xn--' in IDNA)
-///   // Note: The decoder itself expects the raw Punycode without the prefix.
+///   // Decode a Punycode string
 ///   final decoded = codec.decode('egbpdaj6bu4bxfgehfvwxn');
 ///   print(decoded); // Output: ليهماابتكلموشعربي؟
-///
-///   // 2. Use the encoder/decoder individually
-///   const encoder = punycodeEncoder; // Access the singleton instance
-///   const decoder = punycodeDecoder; // Access the singleton instance
-///
-///   // The encoder/decoder also provide helpers for domain/email processing
-///   // These handle the 'xn--' prefix and apply encoding/decoding only where needed.
-///   final encodedDomain = encoder.toAscii('mañana.com');
-///   print(encodedDomain); // Output: xn--maana-pta.com
-///
-///   final decodedDomain = decoder.toUnicode('xn--ls8h.la');
-///   print(decodedDomain); // Output: 💩.la
-///
-///   final email = 'bücher@xn--bcher-kva.com';
-///   final decodedEmail = decoder.toUnicode(email);
-///   print(decodedEmail); // Output: bücher@bücher.com
 /// }
 /// ```
 ///
