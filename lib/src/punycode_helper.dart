@@ -17,6 +17,7 @@ const bootstrapValues = (
   delimiter: '-', // '\x2D'
 );
 
+/// Canonical instance of the PunycodeHelper
 const punycodeHelper = _PunycodeHelper._();
 
 final class _PunycodeHelper {
