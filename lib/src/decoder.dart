@@ -12,8 +12,14 @@ import 'package:punycoder/src/punycode_helper.dart';
 /// Unicode symbols.
 class PunycodeDecoder extends Converter<String, String> {
   final bool _simpleMode;
-
+  
+  /// Creates a Punycode Decoder designed to work with the nuances
+  /// of how Punycode encodes domains and emails
   const PunycodeDecoder() : _simpleMode = false;
+  
+  /// Creates a Punycode Decoder which just works with simple 
+  /// strings and doesn't attempt to account for nuances in 
+  /// how Punycode encodes domains and emails
   const PunycodeDecoder.simple() : _simpleMode = true;
 
   @override

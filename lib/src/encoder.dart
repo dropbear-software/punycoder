@@ -2,10 +2,18 @@ import 'dart:convert';
 
 import 'package:punycoder/src/punycode_helper.dart';
 
+/// Converts a string of Unicode symbols to a Punycode 
+/// string of ASCII-only symbols
 final class PunycodeEncoder extends Converter<String, String> {
   final bool _simpleMode;
 
+  /// Creates a Punycode Encoder designed to work with the nuances
+  /// of how Punycode encodes domains and emails
   const PunycodeEncoder() : _simpleMode = false;
+
+  /// Creates a Punycode Encoder which just works with simple 
+  /// strings and doesn't attempt to account for nuances in 
+  /// how Punycode encodes domains and emails
   const PunycodeEncoder.simple() : _simpleMode = true;
 
   @override
