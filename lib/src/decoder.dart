@@ -1,32 +1,37 @@
 // SPDX-License-Identifier: MIT
 //
-// This code is based on a port of the Punycode.js library by Mathias Bynens.
+// This code is partially based on the Punycode.js library by Mathias Bynens.
 // Original library: https://github.com/mathiasbynens/punycode.js/
 // Original library license: MIT
 
 import 'dart:convert';
 
-import 'package:punycoder/src/shared.dart';
-
-/// The canonical version of the Punycode Decoder
-const punycodeDecoder = PunycodeDecoder._();
+import 'package:punycoder/src/punycode_helper.dart';
 
 /// Converts a Punycode string of ASCII-only symbols to a string of
 /// Unicode symbols.
 class PunycodeDecoder extends Converter<String, String> {
-  const PunycodeDecoder._();
+  final bool _simpleMode;
+  
+  /// Creates a Punycode Decoder designed to work with the nuances
+  /// of how Punycode encodes domains and emails
+  const PunycodeDecoder() : _simpleMode = false;
+  
+  /// Creates a Punycode Decoder which just works with simple 
+  /// strings and doesn't attempt to account for nuances in 
+  /// how Punycode encodes domains and emails
+  const PunycodeDecoder.simple() : _simpleMode = true;
 
-  /// Converts a Punycode string representing a domain name or an email address
-  /// to Unicode. Only the Punycoded parts of the input will be converted, i.e.
-  /// it doesn't matter if you call it on a string that has already been
-  /// converted to Unicode.
-  String toUnicode(String input) {
-    return _mapDomain(input);
+  @override
+  String convert(String input) {
+    if (_simpleMode) {
+      return _decodeString(input);
+    } else {
+      return _decodeDomain(input);
+    }
   }
 
-  /// A simple `map`-like function to work with domain name strings or email
-  /// addresses.
-  String _mapDomain(String input) {
+  String _decodeDomain(String input) {
     var result = '';
     final parts = input.split('@');
 
@@ -37,22 +42,21 @@ class PunycodeDecoder extends Converter<String, String> {
       input = parts[1];
     }
 
-    final labels = input.split(punycodeRegex.regexSeparators);
+    final labels = punycodeHelper.getLabelsFromString(input);
     final encodedLabels = labels.map(_encodeLabel).toList();
     final encoded = encodedLabels.join('.');
     return result + encoded;
   }
 
   String _encodeLabel(String label) {
-    if (punycodeRegex.regexPunycode.hasMatch(label)) {
-      return convert(label.substring(4).toLowerCase());
+    if (punycodeHelper.isPunycodeDomain(label)) {
+      return _decodeString(label.substring(4).toLowerCase());
     } else {
       return label;
     }
   }
 
-  @override
-  String convert(String input) {
+  String _decodeString(String input) {
     final output = <int>[];
     final inputLength = input.length;
     var i = 0;
@@ -96,7 +100,7 @@ class PunycodeDecoder extends Converter<String, String> {
           throw FormatException('Invalid input: Incomplete Punycode sequence');
         }
 
-        final digit = basicToDigit(input.codeUnitAt(index++));
+        final digit = punycodeHelper.basicToDigit(input.codeUnitAt(index++));
 
         if (digit >= bootstrapValues.base) {
           throw FormatException(
@@ -104,7 +108,7 @@ class PunycodeDecoder extends Converter<String, String> {
           );
         }
 
-        if (digit > ((maxInt - i) ~/ w)) {
+        if (digit > ((punycodeHelper.maxInt - i) ~/ w)) {
           throw FormatException(
             'Overflow: input needs wider integers to process',
           );
@@ -124,7 +128,7 @@ class PunycodeDecoder extends Converter<String, String> {
 
         final baseMinusT = bootstrapValues.base - t;
 
-        if (w > (maxInt ~/ baseMinusT)) {
+        if (w > (punycodeHelper.maxInt ~/ baseMinusT)) {
           throw FormatException(
             'Overflow: input needs wider integers to process',
           );
@@ -134,11 +138,15 @@ class PunycodeDecoder extends Converter<String, String> {
       }
 
       final out = output.length + 1;
-      bias = adapt(delta: i - oldi, numPoints: out, firstTime: oldi == 0);
+      bias = punycodeHelper.adapt(
+        delta: i - oldi,
+        numPoints: out,
+        firstTime: oldi == 0,
+      );
 
       // `i` was supposed to wrap around from `out` to `0`,
       // incrementing `n` each time, so we'll fix that now:
-      if ((i ~/ out) > (maxInt - n)) {
+      if ((i ~/ out) > (punycodeHelper.maxInt - n)) {
         throw FormatException(
           'Overflow: input needs wider integers to process',
         );

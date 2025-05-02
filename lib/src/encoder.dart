@@ -1,32 +1,37 @@
 // SPDX-License-Identifier: MIT
 //
-// This code is based on a port of the Punycode.js library by Mathias Bynens.
+// This code is partially based on the Punycode.js library by Mathias Bynens.
 // Original library: https://github.com/mathiasbynens/punycode.js/
 // Original library license: MIT
 
 import 'dart:convert';
 
-import 'package:punycoder/src/shared.dart';
+import 'package:punycoder/src/punycode_helper.dart';
 
-/// The canonical version of the Punycode Encoder
-const punycodeEncoder = PunycodeEncoder._();
+/// Converts a string of Unicode symbols to a Punycode 
+/// string of ASCII-only symbols
+final class PunycodeEncoder extends Converter<String, String> {
+  final bool _simpleMode;
 
-/// Converts a string of Unicode symbols (e.g. a domain name label) to a
-/// Punycode string of ASCII-only symbols.
-class PunycodeEncoder extends Converter<String, String> {
-  const PunycodeEncoder._();
+  /// Creates a Punycode Encoder designed to work with the nuances
+  /// of how Punycode encodes domains and emails
+  const PunycodeEncoder() : _simpleMode = false;
 
-  /// Converts a Unicode string representing a domain name or an email address
-  /// to Punycode. Only the non-ASCII parts of the domain name will be
-  /// converted, i.e. it doesn't matter if you call it with a domain that's
-  /// already in ASCII
-  String toAscii(String input) {
-    return _mapDomain(input);
+  /// Creates a Punycode Encoder which just works with simple 
+  /// strings and doesn't attempt to account for nuances in 
+  /// how Punycode encodes domains and emails
+  const PunycodeEncoder.simple() : _simpleMode = true;
+
+  @override
+  String convert(String input) {
+    if (_simpleMode) {
+      return _encodeString(input);
+    } else {
+      return _encodeDomain(input);
+    }
   }
 
-  /// A simple `map`-like function to work with domain name strings or email
-  /// addresses.
-  String _mapDomain(String input) {
+  String _encodeDomain(String input) {
     var result = '';
     final parts = input.split('@');
 
@@ -37,22 +42,21 @@ class PunycodeEncoder extends Converter<String, String> {
       input = parts[1];
     }
 
-    final labels = input.split(punycodeRegex.regexSeparators);
+    final labels = punycodeHelper.getLabelsFromString(input);
     final encodedLabels = labels.map(_encodeLabel).toList();
     final encoded = encodedLabels.join('.');
     return result + encoded;
   }
 
-  String _encodeLabel(String label) {
-    if (punycodeRegex.regexNonASCII.hasMatch(label)) {
-      return 'xn--${convert(label)}';
+  String _encodeLabel(String input) {
+    if (punycodeHelper.isNonAscii(input)) {
+      return 'xn--${_encodeString(input)}';
     } else {
-      return label;
+      return input;
     }
   }
 
-  @override
-  String convert(String input) {
+  String _encodeString(String input) {
     final output = <int>[];
 
     // Convert the input to an array of Unicode code points.
@@ -90,7 +94,7 @@ class PunycodeEncoder extends Converter<String, String> {
     while (handledCPCount < inputLength) {
       // All non-basic code points < n have been handled already. Find the next
       // larger one:
-      var m = maxInt;
+      var m = punycodeHelper.maxInt;
 
       for (final currentValue in decodedInput) {
         if (currentValue >= n && currentValue < m) {
@@ -102,7 +106,8 @@ class PunycodeEncoder extends Converter<String, String> {
       // but guard against overflow.
       final handledCPCountPlusOne = handledCPCount + 1;
 
-      if (m - n > ((maxInt - delta) / handledCPCountPlusOne).floor()) {
+      if (m - n >
+          ((punycodeHelper.maxInt - delta) / handledCPCountPlusOne).floor()) {
         throw FormatException(
           'Overflow: input needs wider integers to process',
         );
@@ -114,7 +119,7 @@ class PunycodeEncoder extends Converter<String, String> {
       for (final currentValue in decodedInput) {
         if (currentValue < n) {
           delta++;
-          if (delta > maxInt) {
+          if (delta > punycodeHelper.maxInt) {
             throw FormatException(
               'Overflow: input needs wider integers to process',
             );
@@ -139,12 +144,14 @@ class PunycodeEncoder extends Converter<String, String> {
 
             final qMinusT = q - t;
             final baseMinusT = bootstrapValues.base - t;
-            output.add(digitToBasic(t + (qMinusT % baseMinusT), 0));
+            output.add(
+              punycodeHelper.digitToBasic(t + (qMinusT % baseMinusT), 0),
+            );
             q = qMinusT ~/ baseMinusT;
           }
 
-          output.add(digitToBasic(q, 0));
-          bias = adapt(
+          output.add(punycodeHelper.digitToBasic(q, 0));
+          bias = punycodeHelper.adapt(
             delta: delta,
             numPoints: handledCPCountPlusOne,
             firstTime: handledCPCount == basicLength,
