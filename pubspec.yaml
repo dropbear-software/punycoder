@@ -11,7 +11,7 @@ topics:
   - codec
 
 environment:
-  sdk: ^3.7.3
+  sdk: ^3.7.2
 
 dependencies:
   # path: ^1.8.0
