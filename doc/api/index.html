@@ -64,11 +64,11 @@ with the prefix <code>xn--</code>.</p>
 <ul>
 <li><strong>RFC 3492 Compliant:</strong> Implements the Punycode encoding and decoding
   algorithms as specified in the standard.</li>
-<li><strong>IDNA Helpers:</strong> Provides convenient methods (<code>toAscii</code>, <code>toUnicode</code>) for
-  converting full domain names or email addresses, automatically handling
-  the <code>xn--</code> prefix and processing only the necessary parts of the string.</li>
-<li><strong>Core Codec:</strong> Offers direct access to the raw Punycode <code>encode</code> and <code>decode</code>
-  operations via <code>PunycodeCodec</code> for advanced use cases.</li>
+<li><strong>IDNA Friendly:</strong> Provides convenient ways of converting full domain names or
+  email addresses, automatically handling the <code>xn--</code> prefix and processing
+  only the necessary parts of the string.</li>
+<li><strong>Idiomatic Dart:</strong> This package implements the <code>Converter&lt;S, T&gt;</code> interface
+  defined in <code>dart:convert</code> to make working with Punycode easy and familiar.</li>
 <li><strong>Efficient and Tested:</strong> Based on a port of the well-regarded Punycode.js
   library, including tests based on official RFC examples.</li>
 </ul>
@@ -86,42 +86,28 @@ with the prefix <code>xn--</code>.</p>
 <pre class="language-dart"><code class="language-dart">import 'package:punycoder/punycoder.dart';
 
 void main() {
-  // Use the singleton encoder/decoder for common IDNA tasks
-  const encoder = punycodeEncoder;
-  const decoder = punycodeDecoder;
+  // Designed to be used with domains and emails which have special rules
+  const domainCodec = PunycodeCodec();
+  // Designed to work with simple strings
+  const simpleCodec = PunycodeCodec.simple();
 
-  // --- Convert domains/emails TO ASCII (ACE format) ---
-  final domainsToEncode = ['bücher.example', 'example.com', '你好.test'];
-  print('Encoding to ASCII:');
-  for (final domain in domainsToEncode) {
-    final asciiVersion = encoder.toAscii(domain);
-    // toAscii adds 'xn--' prefix only if encoding actually happens
-    print('"$domain"  -&gt;  "$asciiVersion"');
-    // Output:
-    // "bücher.example"  -&gt;  "xn--bcher-kva.example"
-    // "example.com"  -&gt;  "example.com"
-    // "你好.test"  -&gt;  "xn--6qq79v.test"
-  }
+  final encodedString = simpleCodec.encode('münchen');
+  final encodedDomain = domainCodec.encode('münchen.com');
+  final encodedEmail = domainCodec.encode('münchen@münchen.com');
 
-  // --- Convert domains/emails FROM ASCII (ACE format) ---
-  final domainsToDecode = ['xn--bcher-kva.example', 'example.com', 'xn--6qq79v.test'];
-   print('Decoding from ASCII:');
-  for (final domain in domainsToDecode) {
-    final unicodeVersion = decoder.toUnicode(domain);
-    // toUnicode decodes labels starting with 'xn--'
-    print('"$domain"  -&gt;  "$unicodeVersion"');
-    // Output:
-    // "xn--bcher-kva.example"  -&gt;  "bücher.example"
-    // "example.com"  -&gt;  "example.com"
-    // "xn--6qq79v.test"  -&gt;  "你好.test"
-  }
+  stdout.writeln(encodedString); // Output: mnchen-3ya
+  // Uses the correct prefix for the domain
+  stdout.writeln(encodedDomain); // Output: xn--mnchen-3ya.com
+  // Only the domain should be encoded
+  stdout.writeln(encodedEmail); // Output: münchen@xn--mnchen-3ya.com
 
-  // --- Raw Encoding/Decoding (Advanced) ---
-  // For direct encoding/decoding without automatic prefix handling or domain splitting:
-  final codec = PunycodeCodec();
-  final rawEncoded = codec.encode('bücher'); // -&gt; 'bcher-kva' (no prefix)
-  final rawDecoded = codec.decode('bcher-kva'); // -&gt; 'bücher'
-  print('\nRaw codec example: "$rawDecoded"');
+  final decodedString = simpleCodec.decode('mnchen-3ya');
+  final decodecDomain = domainCodec.decode('xn--mnchen-3ya.com');
+  final decodedEmail = domainCodec.decode('münchen@xn--mnchen-3ya.com');
+
+  stdout.writeln(decodedString); // Output: münchen
+  stdout.writeln(decodecDomain); // Output: münchen.com
+  stdout.writeln(decodedEmail); // Output: münchen@münchen.com
 }
 </code></pre>
 </section>
