@@ -6,7 +6,7 @@
 
 import 'dart:convert';
 
-import 'package:punycoder/src/alt/punycode_helper.dart';
+import 'package:punycoder/src/punycode_helper.dart';
 
 /// Converts a Punycode string of ASCII-only symbols to a string of
 /// Unicode symbols.

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:punycoder/src/alt/punycode_helper.dart';
+import 'package:punycoder/src/punycode_helper.dart';
 
 final class PunycodeEncoder extends Converter<String, String> {
   final bool _simpleMode;

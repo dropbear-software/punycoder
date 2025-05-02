@@ -53,4 +53,4 @@
 /// * [PunycodeCodec], the main codec combining encoder and decoder.
 library;
 
-export 'src/alt/codec.dart';
+export 'src/codec.dart';

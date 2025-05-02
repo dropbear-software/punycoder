@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:punycoder/src/alt/decoder.dart' show PunycodeDecoder;
-import 'package:punycoder/src/alt/encoder.dart';
+import 'package:punycoder/src/decoder.dart' show PunycodeDecoder;
+import 'package:punycoder/src/encoder.dart';
 
 /// A codec for encoding and decoding strings using the Punycode algorithm.
 ///
