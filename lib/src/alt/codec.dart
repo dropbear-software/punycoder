@@ -64,24 +64,3 @@ class PunycodeCodec extends Codec<String, String> {
   @override
   Converter<String, String> get encoder => _encoder;
 }
-
-void main() {
-  const domainCodec = PunycodeCodec();
-  const simpleCodec = PunycodeCodec.simple();
-
-  final encodedString = simpleCodec.encode('münchen');
-  final encodedDomain = domainCodec.encode('münchen.com');
-  final encodedEmail = domainCodec.encode('münchen@münchen.com');
-
-  print(encodedString); // Output: mnchen-3ya
-  print(encodedDomain); // Output: xn--mnchen-3ya.com
-  print(encodedEmail); // Output: münchen@xn--mnchen-3ya.com
-
-  final decodedString = simpleCodec.decode('mnchen-3ya');
-  final decodecDomain = domainCodec.decode('xn--mnchen-3ya.com');
-  final decodedEmail = domainCodec.decode('münchen@xn--mnchen-3ya.com');
-
-  print(decodedString); // Output: münchen
-  print(decodecDomain); // Output: münchen.com
-  print(decodedEmail); // Output: münchen@münchen.com
-}
