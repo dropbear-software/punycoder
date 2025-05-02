@@ -50,10 +50,7 @@ void main() {
       });
 
       test('Chinese (traditional)', () {
-        expect(
-          simpleCodec.decode('ihqwctvzc91f659drss3x8bo0yb'),
-          '他們爲什麽不說中文',
-        );
+        expect(simpleCodec.decode('ihqwctvzc91f659drss3x8bo0yb'), '他們爲什麽不說中文');
       });
 
       test('Czech', () {
@@ -72,7 +69,7 @@ void main() {
 
       test('Hindi (Devanagari)', () {
         expect(
-         simpleCodec.decode('i1baa7eci9glrd9b2ae1bj0hfcgg6iyaf8o0a1dig0cd'),
+          simpleCodec.decode('i1baa7eci9glrd9b2ae1bj0hfcgg6iyaf8o0a1dig0cd'),
           'यहलोगहिन्दीक्योंनहींबोलसकतेहैं',
         );
       });
@@ -102,9 +99,7 @@ void main() {
 
       test('Spanish', () {
         expect(
-          simpleCodec.decode(
-            'PorqunopuedensimplementehablarenEspaol-fmd56a',
-          ),
+          simpleCodec.decode('PorqunopuedensimplementehablarenEspaol-fmd56a'),
           'PorquénopuedensimplementehablarenEspañol',
         );
       });
@@ -185,10 +180,7 @@ void main() {
       });
 
       test('with non-printable ASCII', () {
-        expect(
-          codec.decode('0\x01\x02foo.bar'),
-          '0\x01\x02foo.bar',
-        );
+        expect(codec.decode('0\x01\x02foo.bar'), '0\x01\x02foo.bar');
       });
 
       test('with email address', () {

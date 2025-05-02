@@ -1,3 +1,7 @@
+## 0.2.2
+
+- Fix code formatting and ensure README is up to date.
+
 ## 0.2.1
 
 - Fix code formatting and ensure README is up to date.

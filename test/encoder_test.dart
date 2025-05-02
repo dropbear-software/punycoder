@@ -50,10 +50,7 @@ void main() {
       });
 
       test('Chinese (traditional)', () {
-        expect(
-          simpleCodec.encode('他們爲什麽不說中文'),
-          'ihqwctvzc91f659drss3x8bo0yb',
-        );
+        expect(simpleCodec.encode('他們爲什麽不說中文'), 'ihqwctvzc91f659drss3x8bo0yb');
       });
 
       test('Czech', () {
@@ -176,14 +173,8 @@ void main() {
         expect(codec.encode('ma\xF1ana.com'), 'xn--maana-pta.com');
         expect(codec.encode('b\xFCcher.com'), 'xn--bcher-kva.com');
         expect(codec.encode('caf\xE9.com'), 'xn--caf-dma.com');
-        expect(
-          codec.encode('\u2603-\u2318.com'),
-          'xn----dqo34k.com',
-        );
-        expect(
-          codec.encode('\uD400\u2603-\u2318.com'),
-          'xn----dqo34kn65z.com',
-        );
+        expect(codec.encode('\u2603-\u2318.com'), 'xn----dqo34k.com');
+        expect(codec.encode('\uD400\u2603-\u2318.com'), 'xn----dqo34kn65z.com');
         expect(codec.encode('foo\x7F.example'), 'foo\x7F.example');
       });
 
@@ -211,31 +202,19 @@ void main() {
 
     group('separators', () {
       test('Using U+002E as separator', () {
-        expect(
-          codec.encode('ma\xF1ana\x2Ecom'),
-          'xn--maana-pta.com',
-        );
+        expect(codec.encode('ma\xF1ana\x2Ecom'), 'xn--maana-pta.com');
       });
 
       test('Using U+3002 as separator', () {
-        expect(
-          codec.encode('ma\xF1ana\u3002com'),
-          'xn--maana-pta.com',
-        );
+        expect(codec.encode('ma\xF1ana\u3002com'), 'xn--maana-pta.com');
       });
 
       test('Using U+FF0E as separator', () {
-        expect(
-          codec.encode('ma\xF1ana\uFF0Ecom'),
-          'xn--maana-pta.com',
-        );
+        expect(codec.encode('ma\xF1ana\uFF0Ecom'), 'xn--maana-pta.com');
       });
 
       test('Using U+FF61 as separator', () {
-        expect(
-          codec.encode('ma\xF1ana\uFF61com'),
-          'xn--maana-pta.com',
-        );
+        expect(codec.encode('ma\xF1ana\uFF61com'), 'xn--maana-pta.com');
       });
     });
   });

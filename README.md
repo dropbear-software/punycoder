@@ -27,7 +27,7 @@ with the prefix `xn--`.
     email addresses, automatically handling the `xn--` prefix and processing 
     only the necessary parts of the string.
 * **Idiomatic Dart:** This package implements the `Converter<S, T>` interface 
-    defined in `dart:convert` to make working with Punycode easy and familiar.
+    defined in `dart:convert` to make working with Punycode feel easy and familiar.
 * **Efficient and Tested:** Based on a port of the well-regarded Punycode.js
     library, including tests based on official RFC examples.
 
@@ -37,7 +37,7 @@ Add the package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  punycoder: 0.2.0
+  punycoder: ^0.2.0
 ```
 
 Then, import the library in your Dart code:
@@ -47,8 +47,6 @@ import 'package:punycoder/punycoder.dart';
 ```
 
 ## Usage
-The easiest way to handle domain names or emails is using the singleton
-`punycodeEncoder` and `punycodeDecoder` instances and their helper methods.
 
 ```dart
 import 'package:punycoder/punycoder.dart';
