@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="punycoder library API docs, for the Dart programming language.">
+  <title>punycoder library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">punycoder</a></li>
+    <li class="self-crumb">punycoder.dart</li>
+  </ol>
+  <div class="self-name">punycoder</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar=""
+    data-below-sidebar="punycoder&#47;punycoder-library-sidebar.html">
+  
+    <div>
+      
+
+      <h1>
+        <span class="kind-library">punycoder</span>
+        library 
+ 
+
+      </h1>
+    </div>
+
+    
+<section class="desc markdown">
+  <p>Provides a Dart implementation of the Punycode encoding algorithm
+specified in RFC 3492.</p>
+<p>Punycode is a simple and efficient transfer encoding syntax designed
+for use with Internationalized Domain Names in Applications (IDNA).
+It uniquely and reversibly transforms a Unicode string into an ASCII
+string suitable for host name labels, using only letters, digits,
+and hyphens. This library allows encoding Unicode strings to Punycode
+ASCII strings and decoding them back to Unicode.</p>
+<p>This library exports the main <a href="../punycoder/PunycodeCodec-class.html">PunycodeCodec</a> which provides convenient
+access to both the <a href="../punycoder/PunycodeEncoder-class.html">PunycodeEncoder</a> and <a href="../punycoder/PunycodeDecoder-class.html">PunycodeDecoder</a>. You can
+use the codec directly or instantiate the encoder/decoder separately.</p>
+<h2 id="usage">Usage</h2>
+<pre class="language-dart"><code class="language-dart">import 'package:punycoder/punycoder.dart';
+
+void main() {
+  // 1. Use the codec directly
+  final codec = PunycodeCodec();
+
+  // Encode a Unicode string (e.g., a domain label)
+  final encoded = codec.encode('bücher');
+  print(encoded); // Output: bcher-kva
+
+  // Decode a Punycode string (typically prefixed with 'xn--' in IDNA)
+  // Note: The decoder itself expects the raw Punycode without the prefix.
+  final decoded = codec.decode('egbpdaj6bu4bxfgehfvwxn');
+  print(decoded); // Output: ليهماابتكلموشعربي؟
+
+  // 2. Use the encoder/decoder individually
+  const encoder = punycodeEncoder; // Access the singleton instance
+  const decoder = punycodeDecoder; // Access the singleton instance
+
+  // The encoder/decoder also provide helpers for domain/email processing
+  // These handle the 'xn--' prefix and apply encoding/decoding only where needed.
+  final encodedDomain = encoder.toAscii('mañana.com');
+  print(encodedDomain); // Output: xn--maana-pta.com
+
+  final decodedDomain = decoder.toUnicode('xn--ls8h.la');
+  print(decodedDomain); // Output: 💩.la
+
+  final email = 'bücher@xn--bcher-kva.com';
+  final decodedEmail = decoder.toUnicode(email);
+  print(decodedEmail); // Output: bücher@bücher.com
+}
+</code></pre>
+<p>See also:</p>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc3492.html">RFC 3492: Punycode</a></li>
+<li><a href="../punycoder/PunycodeCodec-class.html">PunycodeCodec</a>, the main codec combining encoder and decoder.</li>
+<li><a href="../punycoder/PunycodeEncoder-class.html">PunycodeEncoder</a>, for encoding Unicode to Punycode.</li>
+<li><a href="../punycoder/PunycodeDecoder-class.html">PunycodeDecoder</a>, for decoding Punycode to Unicode.</li>
+</ul>
+</section>
+
+
+    <section class="summary offset-anchor" id="classes">
+      <h2>Classes</h2>
+      <dl>
+          <dt id="PunycodeCodec">
+  <span class="name "><a href="../punycoder/PunycodeCodec-class.html">PunycodeCodec</a></span> 
+
+</dt>
+<dd>
+  A codec for encoding and decoding strings using the Punycode algorithm.
+</dd>
+
+          <dt id="PunycodeDecoder">
+  <span class="name "><a href="../punycoder/PunycodeDecoder-class.html">PunycodeDecoder</a></span> 
+
+</dt>
+<dd>
+  Converts a Punycode string of ASCII-only symbols to a string of
+Unicode symbols.
+</dd>
+
+          <dt id="PunycodeEncoder">
+  <span class="name "><a href="../punycoder/PunycodeEncoder-class.html">PunycodeEncoder</a></span> 
+
+</dt>
+<dd>
+  Converts a string of Unicode symbols (e.g. a domain name label) to a
+Punycode string of ASCII-only symbols.
+</dd>
+
+      </dl>
+    </section>
+
+
+
+
+
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
+      <dl class="properties">
+          <dt id="punycodeDecoder" class="constant">
+    <span class="name "><a href="../punycoder/punycodeDecoder-constant.html">punycodeDecoder</a></span>
+  <span class="signature">&#8594; const <a href="../punycoder/PunycodeDecoder-class.html">PunycodeDecoder</a></span>
+  
+
+</dt>
+<dd>
+  The canonical version of the Punycode Decoder
+  
+
+</dd>
+
+          <dt id="punycodeEncoder" class="constant">
+    <span class="name "><a href="../punycoder/punycodeEncoder-constant.html">punycodeEncoder</a></span>
+  <span class="signature">&#8594; const <a href="../punycoder/PunycodeEncoder-class.html">PunycodeEncoder</a></span>
+  
+
+</dt>
+<dd>
+  The canonical version of the Punycode Encoder
+  
+
+</dd>
+
+      </dl>
+    </section>
+
+
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">punycoder</a></li>
+    <li class="self-crumb">punycoder.dart</li>
+</ol>
+
+    <h5><span class="package-name">punycoder</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="../punycoder/">punycoder</a></li>
+</ol>
+
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+    <h5>punycoder library</h5>
+  </div><!--/sidebar-offcanvas-right-->
+</main>
+<footer>
+  <span class="no-break">
+    punycoder
+      0.1.0-dev
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
