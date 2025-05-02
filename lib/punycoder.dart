@@ -51,10 +51,6 @@
 /// See also:
 /// * [RFC 3492: Punycode](https://www.rfc-editor.org/rfc/rfc3492.html)
 /// * [PunycodeCodec], the main codec combining encoder and decoder.
-/// * [PunycodeEncoder], for encoding Unicode to Punycode.
-/// * [PunycodeDecoder], for decoding Punycode to Unicode.
 library;
 
-export 'src/decoder.dart';
-export 'src/encoder.dart';
-export 'src/punycoder_base.dart';
+export 'src/alt/codec.dart';
