@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: MIT
+//
+// This code is partially based on the Punycode.js library by Mathias Bynens.
+// Original library: https://github.com/mathiasbynens/punycode.js/
+// Original library license: MIT
+
 /// Bootstring parameters & constants from the Punycode
 /// specification (RFC 3492)
 const bootstrapValues = (

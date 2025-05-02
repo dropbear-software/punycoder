@@ -64,11 +64,28 @@ Punycode representations.</p>
 <pre class="language-dart"><code class="language-dart">import 'package:punycoder/punycoder.dart';
 
 void main() {
-  const codec = PunycodeCodec();
-  final encoded = codec.encoder.convert('münchen');
-  print(encoded); // Output: mnchen-3ya
-  final decoded = codec.decoder.convert('mnchen-3ya');
-  print(decoded); // Output: münchen
+ // Designed to be used with domains and emails which have special rules
+ const domainCodec = PunycodeCodec();
+ // Designed to work with simple strings
+ const simpleCodec = PunycodeCodec.simple();
+
+ final encodedString = simpleCodec.encode('münchen');
+ final encodedDomain = domainCodec.encode('münchen.com');
+ final encodedEmail = domainCodec.encode('münchen@münchen.com');
+
+ print(encodedString); // Output: mnchen-3ya
+ // Uses the correct prefix for the domain
+ print(encodedDomain); // Output: xn--mnchen-3ya.com
+ // Only the domain should be encoded
+ print(encodedEmail); // Output: münchen@xn--mnchen-3ya.com
+
+ final decodedString = simpleCodec.decode('mnchen-3ya');
+ final decodecDomain = domainCodec.decode('xn--mnchen-3ya.com');
+ final decodedEmail = domainCodec.decode('münchen@xn--mnchen-3ya.com');
+
+ print(decodedString); // Output: münchen
+ print(decodecDomain); // Output: münchen.com
+ print(decodedEmail); // Output: münchen@münchen.com
 }
 </code></pre>
 </section>
@@ -105,7 +122,17 @@ void main() {
           <span class="name"><a href="../punycoder/PunycodeCodec/PunycodeCodec.html">PunycodeCodec.new</a></span><span class="signature">()</span>
         </dt>
         <dd>
-          Creates a new instance of the Punycode codec.
+          Creates a new instance of the Punycode codec designed
+for working with domains and email addresses where
+additional rules apply about how it is converted
+            <div class="constructor-modifier features">const</div>
+        </dd>
+        <dt id="PunycodeCodec.simple" class="callable">
+          <span class="name"><a href="../punycoder/PunycodeCodec/PunycodeCodec.simple.html">PunycodeCodec.simple</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          Creates a new instance of the Punycode codec just designed
+for working with simple strings
             <div class="constructor-modifier features">const</div>
         </dd>
     </dl>
@@ -300,7 +327,7 @@ void main() {
 <footer>
   <span class="no-break">
     punycoder
-      0.1.0-dev
+      0.1.0
   </span>
   
 </footer>

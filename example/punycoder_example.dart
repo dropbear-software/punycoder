@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:punycoder/punycoder.dart';
 
 void main() {
-  // Can account for what parts of a domain or email should be encoded
+  // Designed to be used with domains and emails which have special rules
   const domainCodec = PunycodeCodec();
-  // Makes no distinction based on the input content
+  // Designed to work with simple strings
   const simpleCodec = PunycodeCodec.simple();
 
   final encodedString = simpleCodec.encode('münchen');

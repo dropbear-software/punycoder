@@ -17,9 +17,9 @@ import 'package:punycoder/src/encoder.dart';
 /// import 'package:punycoder/punycoder.dart';
 ///
 /// void main() {
-///  // Can account for what parts of a domain or email should be encoded
+///  // Designed to be used with domains and emails which have special rules
 ///  const domainCodec = PunycodeCodec();
-///  // Makes no distinction based on the input content
+///  // Designed to work with simple strings
 ///  const simpleCodec = PunycodeCodec.simple();
 ///
 ///  final encodedString = simpleCodec.encode('münchen');
@@ -47,7 +47,7 @@ class PunycodeCodec extends Codec<String, String> {
 
   /// Creates a new instance of the Punycode codec designed
   /// for working with domains and email addresses where
-  /// additional rules apply about what needs to be converted
+  /// additional rules apply about how it is converted
   const PunycodeCodec()
     : _encoder = const PunycodeEncoder(),
       _decoder = const PunycodeDecoder();

@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: MIT
+//
+// This code is partially based on the Punycode.js library by Mathias Bynens.
+// Original library: https://github.com/mathiasbynens/punycode.js/
+// Original library license: MIT
+
 import 'dart:convert';
 
 import 'package:punycoder/src/punycode_helper.dart';
