@@ -20,7 +20,7 @@ import 'package:punycoder/src/encoder.dart';
 ///
 /// Example:
 /// ```dart
-/// import 'package:punycode_codec/punycode_codec.dart';
+/// import 'package:punycoder/punycoder.dart';
 ///
 /// void main() {
 ///   const codec = PunycodeCodec();
