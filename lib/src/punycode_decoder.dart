@@ -29,7 +29,7 @@ class PunycodeDecoder extends Converter<String, String> {
     for (var j = 0; j < b; j++) {
       final cp = inputRunes[j];
       if (!isBasic(cp)) {
-        throw Exception(
+        throw FormatException(
           'Invalid input: non-basic code point in literal portion',
         );
       }
