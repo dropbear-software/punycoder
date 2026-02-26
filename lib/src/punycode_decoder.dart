@@ -48,11 +48,11 @@ class PunycodeDecoder extends Converter<String, String> {
         }
         final digit = decodeDigit(inputRunes[index++]);
         if (digit == -1) {
-          throw Exception('Invalid input: not a valid digit');
+          throw FormatException('Invalid input: not a valid digit');
         }
 
         if (digit > (dartMaxInt - i) ~/ w) {
-          throw Exception('Punycode overflow');
+          throw FormatException('Punycode overflow');
         }
         i += digit * w;
 
@@ -63,7 +63,7 @@ class PunycodeDecoder extends Converter<String, String> {
           bias = adapt(i - oldi, output.length + 1, firstTime: oldi == 0);
 
           if (i ~/ (output.length + 1) > dartMaxInt - n) {
-            throw Exception('Punycode overflow');
+            throw FormatException('Punycode overflow');
           }
           n += i ~/ (output.length + 1);
           i %= output.length + 1;
@@ -75,7 +75,7 @@ class PunycodeDecoder extends Converter<String, String> {
         }
 
         if (w > dartMaxInt ~/ (base - t)) {
-          throw Exception('Punycode overflow');
+          throw FormatException('Punycode overflow');
         }
         w *= base - t;
       }
