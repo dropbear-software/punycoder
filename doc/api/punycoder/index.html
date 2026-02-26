@@ -60,37 +60,8 @@
 
     
 <section class="desc markdown">
-  <p>Provides a Dart implementation of the Punycode encoding algorithm
-specified in RFC 3492.</p>
-<p>Punycode is a simple and efficient transfer encoding syntax designed
-for use with Internationalized Domain Names in Applications (IDNA).
-It uniquely and reversibly transforms a Unicode string into an ASCII
-string suitable for host name labels, using only letters, digits,
-and hyphens. This library allows encoding Unicode strings to Punycode
-ASCII strings and decoding them back to Unicode.</p>
-<p>This library exports the main <a href="../punycoder/PunycodeCodec-class.html">PunycodeCodec</a> which follows the
-standard codec interface from <code>dart:convert</code> to help ensure a
-smooth and idomatic Dart experience when encoding and decoding.</p>
-<h2 id="usage">Usage</h2>
-<pre class="language-dart"><code class="language-dart">import 'package:punycoder/punycoder.dart';
-
-void main() {
-  final codec = PunycodeCodec();
-
-  // Encode a Unicode string (e.g., a domain label)
-  final encoded = codec.encode('bücher');
-  print(encoded); // Output: bcher-kva
-
-  // Decode a Punycode string
-  final decoded = codec.decode('egbpdaj6bu4bxfgehfvwxn');
-  print(decoded); // Output: ليهماابتكلموشعربي؟
-}
-</code></pre>
-<p>See also:</p>
-<ul>
-<li><a href="https://www.rfc-editor.org/rfc/rfc3492.html">RFC 3492: Punycode</a></li>
-<li><a href="../punycoder/PunycodeCodec-class.html">PunycodeCodec</a>, the main codec combining encoder and decoder.</li>
-</ul>
+  <p>A pure Dart implementation of Punycode (RFC 3492) with support for
+mixed-case annotation and errata.</p>
 </section>
 
 
@@ -102,7 +73,23 @@ void main() {
 
 </dt>
 <dd>
-  A codec for encoding and decoding strings using the Punycode algorithm.
+  A <a href="https://api.dart.dev/stable/3.9.4/dart-convert/Codec-class.html">Codec</a> that converts Unicode strings to Punycode ASCII strings.
+</dd>
+
+          <dt id="PunycodeDecoder">
+  <span class="name "><a href="../punycoder/PunycodeDecoder-class.html">PunycodeDecoder</a></span> 
+
+</dt>
+<dd>
+  Punycode decoder as defined in RFC 3492 Section 6.2.
+</dd>
+
+          <dt id="PunycodeEncoder">
+  <span class="name "><a href="../punycoder/PunycodeEncoder-class.html">PunycodeEncoder</a></span> 
+
+</dt>
+<dd>
+  Punycode encoder as defined in RFC 3492 Section 6.3.
 </dd>
 
       </dl>
@@ -112,8 +99,82 @@ void main() {
 
 
 
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
+      <dl class="properties">
+          <dt id="punycode" class="constant">
+    <span class="name "><a href="../punycoder/punycode-constant.html">punycode</a></span>
+  <span class="signature">&#8594; const <a href="../punycoder/PunycodeCodec-class.html">PunycodeCodec</a></span>
+  
+
+</dt>
+<dd>
+  The default instance of <a href="../punycoder/PunycodeCodec-class.html">PunycodeCodec</a>.
+  
+
+</dd>
+
+      </dl>
+    </section>
 
 
+    <section class="summary offset-anchor" id="functions">
+      <h2>Functions</h2>
+      <dl class="callables">
+          <dt id="domainToAscii" class="callable">
+  <span class="name"><a href="../punycoder/domainToAscii.html">domainToAscii</a></span><span class="signature">(<wbr><span class="parameter" id="domainToAscii-param-domain"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span> <span class="parameter-name">domain</span>, {</span><span class="parameter" id="domainToAscii-param-validate"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.4/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">validate</span> = <span class="default-value">true</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Converts a domain name to its Punycode-encoded ASCII representation.
+  
+
+</dd>
+
+          <dt id="domainToUnicode" class="callable">
+  <span class="name"><a href="../punycoder/domainToUnicode.html">domainToUnicode</a></span><span class="signature">(<wbr><span class="parameter" id="domainToUnicode-param-domain"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span> <span class="parameter-name">domain</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Converts a domain name from Punycode-encoded ASCII to Unicode.
+  
+
+</dd>
+
+          <dt id="emailToAscii" class="callable">
+  <span class="name"><a href="../punycoder/emailToAscii.html">emailToAscii</a></span><span class="signature">(<wbr><span class="parameter" id="emailToAscii-param-email"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span> <span class="parameter-name">email</span>, {</span><span class="parameter" id="emailToAscii-param-validate"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.4/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">validate</span> = <span class="default-value">true</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Converts the domain part of an email address to Punycode-encoded ASCII.
+  
+
+</dd>
+
+          <dt id="emailToUnicode" class="callable">
+  <span class="name"><a href="../punycoder/emailToUnicode.html">emailToUnicode</a></span><span class="signature">(<wbr><span class="parameter" id="emailToUnicode-param-email"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span> <span class="parameter-name">email</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Converts the domain part of an email address from Punycode-encoded ASCII to Unicode.
+  
+
+</dd>
+
+      </dl>
+    </section>
 
 
   </div> <!-- /.main-content -->
@@ -143,7 +204,7 @@ void main() {
 <footer>
   <span class="no-break">
     punycoder
-      0.1.0
+      0.3.0
   </span>
   
 </footer>
