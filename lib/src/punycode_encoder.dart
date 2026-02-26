@@ -58,7 +58,7 @@ class PunycodeEncoder extends Converter<String, String> {
         if (c < n) {
           delta++;
           if (delta == 0 || delta > dartMaxInt) {
-            throw Exception('Punycode overflow');
+            throw FormatException('Punycode overflow');
           }
         }
 
