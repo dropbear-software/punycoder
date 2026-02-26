@@ -76,6 +76,10 @@ void main() {
         expect(() => domainToAscii('abc .com'), throwsFormatException);
       });
 
+      test('empty labels', () {
+        expect(() => domainToAscii('example..com'), throwsFormatException);
+      });
+
       test('disable validation', () {
         expect(domainToAscii('ab--c.com', validate: false), 'ab--c.com');
       });

@@ -90,11 +90,14 @@ void _validateDomain(String domain, List<String> labels) {
     );
   }
 
-  for (final label in labels) {
+  for (var i = 0; i < labels.length; i++) {
+    final label = labels[i];
     if (label.isEmpty) {
-      // Trailing dot is allowed in DNS, but empty labels in the middle are not.
-      // However, domain.split('.') on 'example.com.' results in ['example', 'com', '']
-      // We need to decide if we allow trailing dot. punycode.js tests show 'example.com.' -> 'example.com.'
+      // An empty label is only valid if it's the last one, which represents
+      // a trailing dot in the original domain.
+      if (i < labels.length - 1) {
+        throw FormatException('Domain name cannot contain empty labels.');
+      }
       continue;
     }
 
