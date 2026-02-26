@@ -44,7 +44,7 @@ class PunycodeDecoder extends Converter<String, String> {
       var w = 1;
       for (var k = base; ; k += base) {
         if (index >= inputLen) {
-          throw Exception('Invalid input: unexpected end of input');
+          throw FormatException('Invalid input: unexpected end of input');
         }
         final digit = decodeDigit(inputRunes[index++]);
         if (digit == -1) {
