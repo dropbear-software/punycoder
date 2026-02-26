@@ -56,11 +56,11 @@
       
   <div>
     <ol class="annotation-list">
-        <li>@<a href="https://api.dart.dev/beta/3.8.0-278.2.beta/dart-core/override-constant.html">override</a></li>
+        <li>@<a href="https://api.dart.dev/stable/3.9.4/dart-core/override-constant.html">override</a></li>
     </ol>
   </div>
-<span class="returntype"><a href="https://api.dart.dev/beta/3.8.0-278.2.beta/dart-core/String-class.html">String</a></span>
-<span class="name ">convert</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="convert-param-input"><span class="type-annotation"><a href="https://api.dart.dev/beta/3.8.0-278.2.beta/dart-core/String-class.html">String</a></span> <span class="parameter-name">input</span></span></li>
+<span class="returntype"><a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span>
+<span class="name ">convert</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="convert-param-input"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span> <span class="parameter-name">input</span></span></li>
 </ol>)
 
       <div class="features"><span class="feature">override</span></div>
@@ -77,110 +77,82 @@
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
 String convert(String input) {
-  final output = &lt;int&gt;[];
+  final output = StringBuffer();
 
-  &#47;&#47; Convert the input to an array of Unicode code points.
-  final decodedInput = input.runes.toList();
+  &#47;&#47; Appendix A: Mixed-case annotation
+  &#47;&#47; The encoder expects case-folded input. We normalize it but keep track of the original case.
+  final originalRunes = input.runes.toList();
+  final inputLen = originalRunes.length;
+  final caseFlags = originalRunes.map(_isUpperCaseCodePoint).toList();
+  final inputRunes = input.toLowerCase().runes.toList();
 
-  &#47;&#47; Cache the length.
-  final inputLength = decodedInput.length;
-
-  &#47;&#47; Initialize the state.
-  var n = bootstrapValues.initialN;
+  var n = initialN;
   var delta = 0;
-  var bias = bootstrapValues.initialBias;
+  var bias = initialBias;
 
-  &#47;&#47; Handle the basic code points.
-  for (final currentValue in decodedInput) {
-    if (currentValue &lt; 0x80) {
-      output.add(currentValue); &#47;&#47; Add the code point directly
-    }
-  }
-
-  final basicLength = output.length;
-  var handledCPCount = basicLength;
-
-  &#47;&#47; `handledCPCount` is the number of code points that have been handled;
-  &#47;&#47; `basicLength` is the number of basic code points.
-
-  &#47;&#47; Finish the basic string with a delimiter unless it&#39;s empty.
-  if (basicLength &gt; 0) {
-    output.add(
-      bootstrapValues.delimiter.codeUnitAt(0),
-    ); &#47;&#47; Add delimiter code point
-  }
-
-  &#47;&#47; Main encoding loop:
-  while (handledCPCount &lt; inputLength) {
-    &#47;&#47; All non-basic code points &lt; n have been handled already. Find the next
-    &#47;&#47; larger one:
-    var m = maxInt;
-
-    for (final currentValue in decodedInput) {
-      if (currentValue &gt;= n &amp;&amp; currentValue &lt; m) {
-        m = currentValue;
-      }
-    }
-
-    &#47;&#47; Increase `delta` enough to advance the decoder&#39;s &lt;n,i&gt; state to &lt;m,0&gt;,
-    &#47;&#47; but guard against overflow.
-    final handledCPCountPlusOne = handledCPCount + 1;
-
-    if (m - n &gt; ((maxInt - delta) &#47; handledCPCountPlusOne).floor()) {
-      throw FormatException(
-        &#39;Overflow: input needs wider integers to process&#39;,
+  &#47;&#47; Handle the basic code points:
+  for (var i = 0; i &lt; inputLen; i++) {
+    if (isBasic(inputRunes[i])) {
+      output.writeCharCode(
+        encodeBasic(inputRunes[i], upperCase: caseFlags[i]),
       );
     }
+  }
 
-    delta = delta + ((m - n) * handledCPCountPlusOne);
-    n = m;
+  final b = output.length;
+  if (b &gt; 0) {
+    output.writeCharCode(delimiter);
+  }
 
-    for (final currentValue in decodedInput) {
-      if (currentValue &lt; n) {
-        delta++;
-        if (delta &gt; maxInt) {
-          throw FormatException(
-            &#39;Overflow: input needs wider integers to process&#39;,
-          );
-        }
-      }
-
-      if (currentValue == n) {
-        &#47;&#47; Represent delta as a generalized variable-length integer.
-        var q = delta;
-
-        for (var k = bootstrapValues.base; ; k += bootstrapValues.base) {
-          final t =
-              k &lt;= bias
-                  ? bootstrapValues.tMin
-                  : (k &gt;= bias + bootstrapValues.tMax
-                      ? bootstrapValues.tMax
-                      : k - bias);
-
-          if (q &lt; t) {
-            break;
-          }
-
-          final qMinusT = q - t;
-          final baseMinusT = bootstrapValues.base - t;
-          output.add(digitToBasic(t + (qMinusT % baseMinusT), 0));
-          q = qMinusT ~&#47; baseMinusT;
-        }
-
-        output.add(digitToBasic(q, 0));
-        bias = adapt(
-          delta: delta,
-          numPoints: handledCPCountPlusOne,
-          firstTime: handledCPCount == basicLength,
-        );
-        delta = 0;
-        ++handledCPCount;
+  var h = b;
+  while (h &lt; inputLen) {
+    &#47;&#47; Find the next smallest non-basic code point &gt;= n
+    var m = dartMaxInt;
+    for (final cp in inputRunes) {
+      if (cp &gt;= n &amp;&amp; cp &lt; m) {
+        m = cp;
       }
     }
-    ++delta;
-    ++n;
+
+    &#47;&#47; Increase delta enough to advance the decoder&#39;s &lt;n,i&gt; state to &lt;m,0&gt;
+    if (m - n &gt; (dartMaxInt - delta) ~&#47; (h + 1)) {
+      throw Exception(&#39;Punycode overflow&#39;);
+    }
+    delta += (m - n) * (h + 1);
+    n = m;
+
+    for (var j = 0; j &lt; inputLen; j++) {
+      final c = inputRunes[j];
+      if (c &lt; n) {
+        delta++;
+        if (delta == 0 || delta &gt; dartMaxInt) {
+          throw Exception(&#39;Punycode overflow&#39;);
+        }
+      }
+
+      if (c == n) {
+        var q = delta;
+        for (var k = base; ; k += base) {
+          final t = k &lt;= bias ? tmin : (k &gt;= bias + tmax ? tmax : k - bias);
+          if (q &lt; t) break;
+
+          final digit = t + ((q - t) % (base - t));
+          output.writeCharCode(encodeDigit(digit, upperCase: false));
+          q = (q - t) ~&#47; (base - t);
+        }
+
+        output.writeCharCode(encodeDigit(q, upperCase: caseFlags[j]));
+
+        bias = adapt(delta, h + 1, firstTime: h == b);
+        delta = 0;
+        h++;
+      }
+    }
+    delta++;
+    n++;
   }
-  return String.fromCharCodes(output);
+
+  return output.toString();
 }</code></pre>
 </section>
 
@@ -209,7 +181,7 @@ String convert(String input) {
 <footer>
   <span class="no-break">
     punycoder
-      0.1.0-dev
+      0.3.0
   </span>
   
 </footer>

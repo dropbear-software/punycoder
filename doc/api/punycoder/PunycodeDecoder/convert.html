@@ -56,11 +56,11 @@
       
   <div>
     <ol class="annotation-list">
-        <li>@<a href="https://api.dart.dev/beta/3.8.0-278.2.beta/dart-core/override-constant.html">override</a></li>
+        <li>@<a href="https://api.dart.dev/stable/3.9.4/dart-core/override-constant.html">override</a></li>
     </ol>
   </div>
-<span class="returntype"><a href="https://api.dart.dev/beta/3.8.0-278.2.beta/dart-core/String-class.html">String</a></span>
-<span class="name ">convert</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="convert-param-input"><span class="type-annotation"><a href="https://api.dart.dev/beta/3.8.0-278.2.beta/dart-core/String-class.html">String</a></span> <span class="parameter-name">input</span></span></li>
+<span class="returntype"><a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span>
+<span class="name ">convert</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="convert-param-input"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.4/dart-core/String-class.html">String</a></span> <span class="parameter-name">input</span></span></li>
 </ol>)
 
       <div class="features"><span class="feature">override</span></div>
@@ -77,106 +77,85 @@
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
 String convert(String input) {
-  final output = &lt;int&gt;[];
-  final inputLength = input.length;
+  final inputLen = input.length;
+  final inputRunes = input.runes.toList();
+
+  var n = initialN;
   var i = 0;
-  var n = bootstrapValues.initialN;
-  var bias = bootstrapValues.initialBias;
+  var bias = initialBias;
 
-  &#47;&#47; Handle the basic code points: let `basic` be the number of input code
-  &#47;&#47; points before the last delimiter, or `0` if there is none, then copy
-  &#47;&#47; the first basic code points to the output.
-
-  var basic = input.lastIndexOf(bootstrapValues.delimiter);
-  if (basic &lt; 0) {
-    basic = 0;
+  &#47;&#47; Handle the basic code points:
+  &#47;&#47; Find the last delimiter
+  var b = 0;
+  for (var j = 0; j &lt; inputLen; j++) {
+    if (isDelimiter(inputRunes[j])) b = j;
   }
 
-  for (var j = 0; j &lt; basic; ++j) {
-    &#47;&#47; if it&#39;s not a basic code point
-    if (input.codeUnitAt(j) &gt;= 0x80) {
-      throw RangeError.value(
-        input.codeUnitAt(j),
-        &#39;input&#39;,
-        &#39;Illegal input &gt;= 0x80 (not a basic code point)&#39;,
+  final output = &lt;int&gt;[];
+  final caseFlags = &lt;bool&gt;[];
+
+  for (var j = 0; j &lt; b; j++) {
+    final cp = inputRunes[j];
+    if (!isBasic(cp)) {
+      throw Exception(
+        &#39;Invalid input: non-basic code point in literal portion&#39;,
       );
     }
-    output.add(input.codeUnitAt(j));
+    output.add(cp);
+    caseFlags.add(_isUpperCaseCodePoint(cp));
   }
 
-  &#47;&#47; Main decoding loop: start just after the last delimiter if any basic code
-  &#47;&#47; points were copied; start at the beginning otherwise.
-
-  for (var index = basic &gt; 0 ? basic + 1 : 0; index &lt; inputLength;) {
-    &#47;&#47; `index` is the index of the next character to be consumed.
-    &#47;&#47; Decode a generalized variable-length integer into `delta`,
-    &#47;&#47; which gets added to `i`. The overflow checking is easier
-    &#47;&#47; if we increase `i` as we go, then subtract off its starting
-    &#47;&#47; value at the end to obtain `delta`.
+  &#47;&#47; Main decoding loop:
+  var index = b &gt; 0 ? b + 1 : 0;
+  while (index &lt; inputLen) {
     final oldi = i;
-
-    for (var w = 1, k = bootstrapValues.base; ; k += bootstrapValues.base) {
-      if (index &gt;= inputLength) {
-        throw FormatException(&#39;Invalid input: Incomplete Punycode sequence&#39;);
+    var w = 1;
+    for (var k = base; ; k += base) {
+      if (index &gt;= inputLen) {
+        throw Exception(&#39;Invalid input: unexpected end of input&#39;);
+      }
+      final digit = decodeDigit(inputRunes[index++]);
+      if (digit == -1) {
+        throw Exception(&#39;Invalid input: not a valid digit&#39;);
       }
 
-      final digit = basicToDigit(input.codeUnitAt(index++));
-
-      if (digit &gt;= bootstrapValues.base) {
-        throw FormatException(
-          &#39;Invalid input: Invalid base-36 digit: ${input[index - 1]}&#39;,
-        );
+      if (digit &gt; (dartMaxInt - i) ~&#47; w) {
+        throw Exception(&#39;Punycode overflow&#39;);
       }
-
-      if (digit &gt; ((maxInt - i) ~&#47; w)) {
-        throw FormatException(
-          &#39;Overflow: input needs wider integers to process&#39;,
-        );
-      }
-
       i += digit * w;
-      final t =
-          k &lt;= bias
-              ? bootstrapValues.tMin
-              : (k &gt;= bias + bootstrapValues.tMax
-                  ? bootstrapValues.tMax
-                  : k - bias);
 
+      final t = k &lt;= bias ? tmin : (k &gt;= bias + tmax ? tmax : k - bias);
       if (digit &lt; t) {
+        final isUpper = _isUpperCaseCodePoint(inputRunes[index - 1]);
+
+        bias = adapt(i - oldi, output.length + 1, firstTime: oldi == 0);
+
+        if (i ~&#47; (output.length + 1) &gt; dartMaxInt - n) {
+          throw Exception(&#39;Punycode overflow&#39;);
+        }
+        n += i ~&#47; (output.length + 1);
+        i %= output.length + 1;
+
+        caseFlags.insert(i, isUpper);
+        output.insert(i, n);
+        i++;
         break;
       }
 
-      final baseMinusT = bootstrapValues.base - t;
-
-      if (w &gt; (maxInt ~&#47; baseMinusT)) {
-        throw FormatException(
-          &#39;Overflow: input needs wider integers to process&#39;,
-        );
+      if (w &gt; dartMaxInt ~&#47; (base - t)) {
+        throw Exception(&#39;Punycode overflow&#39;);
       }
-
-      w = w * baseMinusT; &#47;&#47; Multiply within integer limits
+      w *= base - t;
     }
-
-    final out = output.length + 1;
-    bias = adapt(delta: i - oldi, numPoints: out, firstTime: oldi == 0);
-
-    &#47;&#47; `i` was supposed to wrap around from `out` to `0`,
-    &#47;&#47; incrementing `n` each time, so we&#39;ll fix that now:
-    if ((i ~&#47; out) &gt; (maxInt - n)) {
-      throw FormatException(
-        &#39;Overflow: input needs wider integers to process&#39;,
-      );
-    }
-
-    n += i ~&#47; out;
-    i %= out;
-
-    &#47;&#47; Insert `n` at position `i` of the output.
-    output.insert(i, n);
-    i++;
   }
 
-  return String.fromCharCodes(output);
+  &#47;&#47; Apply case flags for mixed-case annotation
+  final result = StringBuffer();
+  for (var j = 0; j &lt; output.length; j++) {
+    result.writeCharCode(_applyCase(output[j], caseFlags[j]));
+  }
+
+  return result.toString();
 }</code></pre>
 </section>
 
@@ -205,7 +184,7 @@ String convert(String input) {
 <footer>
   <span class="no-break">
     punycoder
-      0.1.0-dev
+      0.3.0
   </span>
   
 </footer>

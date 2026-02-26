@@ -1,28 +1,37 @@
-import 'dart:io';
-
+// Printing is appropriate for a demonstration script.
+// ignore_for_file: avoid_print
 import 'package:punycoder/punycoder.dart';
 
 void main() {
-  // Designed to be used with domains and emails which have special rules
-  const domainCodec = PunycodeCodec();
-  // Designed to work with simple strings
-  const simpleCodec = PunycodeCodec.simple();
+  // 1. Simple encoding
+  // "münchen" contains a non-ASCII character 'ü'.
+  const simpleInput = 'münchen';
+  final simpleEncoded = punycode.encode(simpleInput);
+  print('Simple Input:   $simpleInput');
+  print('Simple Encoded: $simpleEncoded'); // mnchen-3ya
 
-  final encodedString = simpleCodec.encode('münchen');
-  final encodedDomain = domainCodec.encode('münchen.com');
-  final encodedEmail = domainCodec.encode('münchen@münchen.com');
+  // 2. Simple decoding
+  final simpleDecoded = punycode.decode(simpleEncoded);
+  print('Simple Decoded: $simpleDecoded');
+  print('');
 
-  stdout.writeln(encodedString); // Output: mnchen-3ya
-  // Uses the correct prefix for the domain
-  stdout.writeln(encodedDomain); // Output: xn--mnchen-3ya.com
-  // Only the domain should be encoded
-  stdout.writeln(encodedEmail); // Output: münchen@xn--mnchen-3ya.com
+  // 3. Mixed-case preservation (Appendix A)
+  // Punycoder preserves case information using the optional mixed-case annotation.
+  const mixedInput = 'MÜnchen';
+  final mixedEncoded = punycode.encode(mixedInput);
+  print('Mixed Input:    $mixedInput');
+  print('Mixed Encoded:  $mixedEncoded'); // Mnchen-3yA (Note the uppercase 'A')
 
-  final decodedString = simpleCodec.decode('mnchen-3ya');
-  final decodecDomain = domainCodec.decode('xn--mnchen-3ya.com');
-  final decodedEmail = domainCodec.decode('münchen@xn--mnchen-3ya.com');
+  final mixedDecoded = punycode.decode(mixedEncoded);
+  print('Mixed Decoded:  $mixedDecoded'); // MÜnchen
+  print('');
 
-  stdout.writeln(decodedString); // Output: münchen
-  stdout.writeln(decodecDomain); // Output: münchen.com
-  stdout.writeln(decodedEmail); // Output: münchen@münchen.com
+  // 4. Using the Codec interface
+  // You can also use the PunycodeEncoder and PunycodeDecoder classes directly.
+  const encoder = PunycodeEncoder();
+  const decoder = PunycodeDecoder();
+
+  final result = encoder.convert('Dart-Language');
+  final original = decoder.convert(result);
+  print('Codec round-trip: $original');
 }
