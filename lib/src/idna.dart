@@ -1,8 +1,5 @@
 import '../punycoder.dart';
 
-/// Recognized label separators in IDNA2003.
-const _separators = ['.', '\u3002', '\uFF0E', '\uFF61'];
-
 /// Converts a domain name to its Punycode-encoded ASCII representation.
 ///
 /// If [validate] is true (default), the function enforces RFC 1034 and
@@ -75,16 +72,8 @@ String emailToUnicode(String email) {
 }
 
 List<String> _splitBySeparators(String domain) {
-  final result = <String>[];
-  var start = 0;
-  for (var i = 0; i < domain.length; i++) {
-    if (_separators.contains(domain[i])) {
-      result.add(domain.substring(start, i));
-      start = i + 1;
-    }
-  }
-  result.add(domain.substring(start));
-  return result;
+  // This RegExp matches any of the IDNA2003 separators.
+  return domain.split(RegExp(r'[.\u3002\uFF0E\uFF61]'));
 }
 
 bool _isAscii(String s) {
