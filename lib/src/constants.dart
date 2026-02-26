@@ -24,9 +24,10 @@ const int delimiter = 45; // 0x2D '-'
 
 /// The maximum value of an integer.
 /// In Dart, this is 2^63 - 1 on VM/Native, but 2^53 - 1 on Web.
-final int maxInt = identical(0, 0.0)
-    ? 9007199254740991 // JS safe integer (2^53 - 1)
-    : int.parse('9223372036854775807'); // 64-bit signed max (2^63 - 1)
+final int maxInt =
+    identical(0, 0.0)
+        ? 9007199254740991 // JS safe integer (2^53 - 1)
+        : int.parse('9223372036854775807'); // 64-bit signed max (2^63 - 1)
 
 /// The maximum value of a Dart integer, platform-aware.
 final int dartMaxInt = maxInt;
